@@ -17,8 +17,9 @@ Do you have these questions? Well lets see the answers.
 
 ### Preliminary
 
-
+![The camera angle of view makes a triangle]({{site.baseurl}}/assets/img/simple_triangle.png)
 ### Footprint on the ground based on 
 
+![Screenshot of tester application]({{site.baseurl}}/assets/img/cam_footprint_tester.PNG)
 
 ### Setting up the blog site
