@@ -7,7 +7,7 @@ img: websiteScreenshot.PNG # Add image post (optional)
 tags: [Jekyll, GitHub Pages] # add tag
 ---
 
-So this is my first post on this blog. Hopefully it will be filled with some interesting subject matter.
+So this is my first post on this blog. Hopefully it will be filled with some interesting subject matter. The following is mostly a poorly worded reference for myself, but could also help you set up similar site. 
 
 ### Setting Up the Splash Page
 
