@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Aerial Camera Ground Footprint with a gimbal 
-date: 2018-01-13 00:00:00 -0700
+date: 2018-01-14 21:32:00 -0700
 description: Exploring aerial footprints, quaternions, and angles
 img: cam_footprint_tester.PNG # Add image post (optional)
 tags: [Jekyll, GitHub Pages] # add tag
