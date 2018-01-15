@@ -11,25 +11,25 @@ tags: [UAV, Camera, footprint, aerial, field of view, quaternions, angles] # add
 * How does this change if the UAV experiences roll/pitch/yaw?
 * What happens if this camera is on a gimbal?
 
-Do you have these questions? Well lets see the answers.
+Do you have these questions? Well let's see the answers.
 
 ## Preliminary Information
 Before we get started it is important to cover a few basics. This tutorial will use the angle units of degrees, distance units of meters, and GPS coordinates in UTM.
 
-It is important that when converting from UTM->WGS84 or WGS84->UTM that all of your units start in the same coordinate systems. This tutorial will not cover how to convert these units, but it is important that all conversions follow the same math and are reversible. (Don't obtain coordinates from different sources or formats because they may have used a slightly different conversion method than what you did.)
+It is important that when converting from UTM->WGS84 or WGS84->UTM that all of your units start in the same coordinate system. This tutorial will not cover how to convert between units, but it is important that all conversions follow the same math and are reversible. (Don't obtain coordinates from different sources or formats because they may have used a slightly different conversion method than what you will.)
 
-In this tutorial I will be using Tait-Bryan angles. This is an angle naming convention so you can use whatever you like. The only changes int he math will be a negative sign here and there. [Angle Conventions](https://en.wikipedia.org/wiki/Euler_angles)
+In this tutorial we will be using Tait-Bryan angles. This is an angle naming convention so you can personally use whatever you like. The only changes in the math will be a negative sign here and there. [Angle Conventions](https://en.wikipedia.org/wiki/Euler_angles)
 
 ![Tait-Bryan Angle Convention. Courtesy Wikimedia](https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Taitbrianzyx.svg/245px-Taitbrianzyx.svg.png)
 
 
 ## Basic Ground Footprint
-The basic footprint of a camera point straight down is determined by some very basic trigonometry. A camera's sensor and lens combination will produce a certain angle of view (AOV). You can look this up for your camera. AOV can be broken into a horizontal field of view (HFV), and a vertical field of view (VFV). [Check out this wikipedia page for more info](https://en.wikipedia.org/wiki/Field_of_view)
+The footprint of a camera pointing straight down is determined by some very basic trigonometry. A camera's sensor and lens combination will produce a certain angle of view (AOV). You can look this up for your camera. AOV can be broken into a horizontal field of view (HFV), and a vertical field of view (VFV). [Check out this wikipedia page for more info](https://en.wikipedia.org/wiki/Field_of_view)
 
-So from our UAV we can make a triangle with the ground.
+So from our UAV we can make a triangle with the ground, using AOV and altitude.
 ![The camera angle of view makes a triangle]({{site.baseurl}}/assets/img/simple_triangle.png)
 
-If we cut this triangle, by drawing a line from the UAV to the ground we can get 2 smaller triangles. Each of these smaller triangles are right triangles so we can use trigonometric identities to solve for distance on the ground.
+If we cut this triangle, by drawing a straight line from the UAV to the ground, we can get 2 smaller triangles. Each of these smaller triangles are right triangles so we can use trigonometric identities to solve for distance on the ground.
 
 $$ ground\_in\_image =  (\tan{\frac{AOV}{2}} \times altitude) \times 2 \tag{1}$$ 
 
@@ -37,15 +37,15 @@ $$ horizontal\_ground =  (\tan{\frac{HFV}{2}} \times altitude) \times 2 \tag{2}$
 
 $$ vertical\_ground =  (\tan{\frac{VFV}{2}} \times altitude) \times 2 \tag{3}$$
 
-Now this is great and all but it does not take into account the utm location of the UAV nor does it take into account the yaw of the UAV. So let's do that.
+Now this is great and all, but it does not take into account the utm location of the UAV nor does it take into account the yaw of the UAV. So let's do that.
 
-Let's start by defining two new variables that don't represent the total ground but just the ground from directly below the UAV. (in our case this will end up being exactly half of the ground.)
+Let's start by defining two new variables, that represent the distance of the ground from a point directly below the UAV. (in our case this will end up being exactly half of the ground.)
 
 $$ dx =  (\tan{\frac{HFV}{2}} \times altitude) \tag{4}$$
 
 $$ dy =  (\tan{\frac{VFV}{2}} \times altitude) \tag{5}$$
 
-This dx and dy disregard any yaw, so we will need to conver them into x and y in the UTM system by incorporating yaw. (Also called psi in Tait_bryan)
+This dx and dy disregard any yaw, so we will need to convert them into x and y in the UTM system by incorporating yaw. (Also called psi in Tait_bryan)
 
 $$dutmx =  dx \times \cos{\psi} - dy \times \sin{\psi} \tag{6}$$
 
@@ -57,21 +57,21 @@ $$utmx_1 = utmx + dutmx \tag{8}$$
 
 $$utmy_1 = utmy + dutmy \tag{9}$$
 
-So this will provide the first corner of you ground footprint. To get additional corners change the values in equations 4,5. Use the remaining combinations of:
+So this will provide the first corner of your ground footprint. To get additional corners change the values in equations 4,5. Use the remaining combinations of:
 
 $$(\frac{HFV}{2},-\frac{VFV}{2}),(-\frac{HFV}{2},\frac{VFV}{2}),(-\frac{HFV}{2},-\frac{VFV}{2})$$
 
-## Ok. So my UAV is pitching and rolling about, Now what do I do?
+## So my UAV is pitching and rolling about, Now what do I do?
 Ok, I get you. This is actually really easy since we have no yet included a gimbal. All you need to do is modify equations 4,5 like this:
 
 $$ dx =  (\tan{(\frac{HFV}{2} + \phi)} \times altitude) \tag{10}$$
 
 $$ dy =  (\tan{(\frac{VFV}{2}+ \theta)} \times altitude) \tag{11}$$
 
-## Lets include a gimbal
-This is where things get complicated. Essentially we have two rotations and there is no simple fix like in 10 and 11. When I first attempted this problem I tried to expand equations 10, and 11 but that proved to be a headache. I attempted to take the two rotations, combine them and then apply them. The problem is that when you combine the two rotations you are throwing away information on which direction of the image is up. What I learned was that I need to look at each corner independently and then apply rotations.
+## Let's include a gimbal
+This is where things get complicated. Essentially we have two rotations and there is no simple fix like in 10 and 11. When I first attempted this problem I tried to expand equations 10, and 11 but that proved to be a headache. I attempted to take the two rotations, combine them together and then apply them. The problem is that when you combine the two rotations you are throwing away information on which direction of the image is up. What I learned was that I needed to look at each corner independently and then apply the rotations.
 
-Ok so let's do it. First we need to represent each corner as a quaternion. (We will be using quaternions to perform the rotations). Also I'll be doing the following section in C#, but it should still be easy to follow along.
+Ok so let's do it. First we need to represent each corner as a quaternion. (We will be using quaternions to perform the rotations). Also I'll be doing the following section in C#, but it should still be easy to follow along. The source code for the math is linked at the end of this section.
 
 {% highlight c# %}
 Quaternion TR = new Quaternion(-hfv.Value / 2,  vfv.Value / 2, 0, true);
@@ -107,6 +107,8 @@ $$dutmy = -dx \times \sin{yaw} - dy \times \cos{yaw} \tag{15}$$
 
 Then follow up with 8 and 9.
 
+[C# Quaternion class used to perform multiplications and conversions](https://github.com/rijesha/CamFootprintTester/blob/master/CamFootprintTester/Quaternion.cs)
+
 ## C# Cam Footprint Tester
 
 I wrote a small c# application to test this out.
@@ -116,7 +118,6 @@ I wrote a small c# application to test this out.
 [You can find the full code here](https://github.com/rijesha/CamFootprintTester/) 
 
 [The main program file that includes all the steps](https://github.com/rijesha/CamFootprintTester/blob/master/CamFootprintTester/MainWindow.xaml.cs)
-[The Quaternion class that convert back and forth from Euler angles and multiplies](https://github.com/rijesha/CamFootprintTester/blob/master/CamFootprintTester/Quaternion.cs)
 
 ## Real Life Useage.
 I wrote this code for the Paparazzi UAV project. It is written in OCaml.
