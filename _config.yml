@@ -1,6 +1,5 @@
 title: The Rijesh Augustine Blog!
-description: > # this means to ignore newlines until "baseurl:"
-  A blog where I detail some fun projects.
+description: A blog where I detail some fun projects.
 permalink: ':title/'
 baseurl: "/blog" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
