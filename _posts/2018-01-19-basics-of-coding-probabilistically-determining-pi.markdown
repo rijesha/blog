@@ -3,7 +3,7 @@ layout: post
 title: "Basics of Coding: Probabilistically Determining pi"  
 date: 2018-01-19 00:00:00 -0700
 description: Learning how to determine pi base on probability whilst also learning a little bit about programming languages
-img: pprz_cam_screenshot.png # Add image post (optional)
+img: code_bg_small.png # Add image post (optional)
 tags: [pi, coding, probability, c#, ocaml, python] # add tag
 ---
 ## PI
@@ -14,37 +14,41 @@ $$ Circumference =  \pi \times d \tag{1}$$
 
 It is also used to calculate a circle's area.
 
-$$ Area_circ =  \pi \times r^2 \tag{2}$$
+$$ Area_{circ} =  \pi \times r^2 \tag{2}$$
 
-If we overlay a circle on a square as shown below we can compare the difference in the area of the two.
+If we overlay a circle on a square as shown below we can compare the differences in area of the two.
+
+
 ![Area Comparison]({{site.baseurl}}/assets/img/circle_compare.png)
 
-So if we were to randomly choose any location on the square what would be the probability that it would be inside the circle. The probability is just the ratio of areas.
+So if we were to randomly choose any location on the square what would be the probability that the location would also be inside the circle. The probability is just the ratio of areas.
 
-$$ Area_sqr =  d^2 = (2r)^2 = 4 \times r^2 \tag{3}$$
+$$ Area_{sqr} =  d^2 = (2r)^2 = 4 \times r^2 \tag{3}$$
 
-$$ Probabilty =  \frac{Area_circ}{Area_sqr} = \frac{ \pi \times r^2}{4 \times r^2} \tag{4}$$
+$$ Probability =  \frac{Area_{circ}}{Area_{sqr}} = \frac{ \pi \times r^2}{4 \times r^2} \tag{4}$$
 
-$$ Probabilty =   \frac{\pi}{4} \tag{5}$$
+$$ Probability =   \frac{\pi}{4} \tag{5}$$
 
 So the chance that we hit the inside of the circle is $$\frac{\pi}{4}$$.
 
 ## Making it computationally easier.
 
 Let's just look at $$\frac{1}{4}$$ of the drawing. This will make a bit more sense later on.
-![Area Comparison]({{site.baseurl}}/assets/img/quarter_circle_compare.png)
 
-In this diagram the radius of the circle is 1. The probability of being in the $$\frac{1}{4}$$ circle when choosing a random position inside the smaller square is still the same probabiliy as in 5. This diagram also shows an x and y axis with an origin at the centre of the original circle.
 
-Ok. So if we can generate two random numbers between 0 and 1, we can use the first random number to represent an x coordinate nd the second number to represent a y coordinate. We just need some equation to govern whether the randomly chosen x and y coordinate are insie the $$\frac{1}{4}$$ circle.
+![Quarter Area Comparison]({{site.baseurl}}/assets/img/quarter_circle_compare.png)
+
+In this diagram the radius of the circle is 1. The probability of being in the $$\frac{1}{4}$$ circle when choosing a random position inside the smaller square is still the same probabiliy as in eq 5. This is because we have divided the area of both by 4. This diagram also shows an x and y axis with an origin at the centre of the original circle.
+
+Ok. So if we can generate two random numbers between 0 and 1, we can use the first random number to represent an x coordinate nd the second number to represent a y coordinate. We just need some equation to govern whether the randomly chosen x and y coordinate are inside the $$\frac{1}{4}$$ circle.
 
 We can use pythagorean theorem to help us. We know that the radius of the circle is always 1. So...
 
-$$ \sqrt{x^2 + y^2} < 1 \tag{4}$$
+$$ \sqrt{x^2 + y^2} < 1 \tag{6}$$
 
 
 ## Calculating with Python
-Ok, let's start with how to do this with python.
+Ok, let's start with python.
 
 We will be using a few premade python libraries. So the first step is to import these libraries in.
 
@@ -61,21 +65,21 @@ nine = math.pow(3,2)   # returns 9 inside the variable nine
 random_num = random.random() # returns a random number between 0 and 1 inside the variable random_num
 {% endhighlight %}
 
-This is a little tedius to keep writing math. and random. so instead we can import all the functions and use them directly.
+It is a little tedious to keep writing the words math and random, so instead we can import all functions of these two libraries and call the functions directly.
 
 {% highlight python %}
 from math import *
 from random import *
 {% endhighlight %}
 
-After importing the libraries we need to genrate to variable to hold the total number of iterations we will perform and the number of times those iterations succeed in being inside the $$\frac{1}{4}$$ circle.
+After importing the libraries we need to generate a variable to hold the total number of iterations we will perform and the number of times those iterations succeed in being inside the $$\frac{1}{4}$$ circle.
 
 {% highlight python %}
 total_iterations = 1000000
 count_inside_quarter_circle = 0
 {% endhighlight %}
 
-Next we can start looping through all of the iterations. The easiest way to make a for loop in python is using the range keyword. This block of code will run multiple times while changing the value of i from 0 to total_iterations
+Next we can start looping through all of the iterations. The easiest way to make a for loop in python is using the range keyword. This block of code will run multiple times while changing the value of i from 0 to total_iterations.
 
 {% highlight python %}
 for i in range(total_iterations):
@@ -95,7 +99,7 @@ for i in range(total_iterations):
 Finally we can then print out our answer for pi.
 
 {% highlight python %}
-print(4*count_inside_quarter_circle/total_iterations)
+print(4 * count_inside_quarter_circle / total_iterations)
 {% endhighlight %}
 
 You can test this online at https://repl.it/ or https://www.python.org/shell/.
@@ -104,24 +108,26 @@ The full file should look like this.
 
 {% gist d74802badf35c47cb6651cddc05dade6 calculatingpi.py %}
 
-## Calculating with C#
+## Calculating with C\#
 
 Ok so this starts off very similar to python. Start off with our imports. In c# we use the using keyword.
 
 {% highlight c# %}
 using System;
 using System.Math;
-
-Next we contrcut the main body of our program. We need to make a class and a main function. This is how the compiler knows where the program starts. You need to do something similar in python when you have larger projects, but python interprets everything at runtime line by line.
-
 {% endhighlight %}
+
+Next we contrcut the main body of our program. We need to make a class and a main function. This is how the compiler knows where the program starts. You need to do something similar in python when you have larger projects, but python interprets everything at runtime line by line, so smaller projects are fine.
+
+{% highlight c# %}
 class MainClass {
   public static void Main (string[] args) {
     //Program Code
   }
 }
+{% endhighlight %}
 
-In c# we need to define variables and the type of data associated with them. We will be using integer variables and doubles. Doubles are numbers that can hold a large amount of decimal values.
+In c# we need to define variables and the type of data associated with them. We will be using integer variables and doubles. Doubles are numbers that can hold decimal values.
 
 {% highlight c# %}
 int total_iterations = 100000000;
@@ -155,18 +161,19 @@ for (int i = 0; i < total_iterations; i++){
 
 Our full loop will llok like this.
 {% highlight c# %}
-    var r = new Random();
-    for (int i = 0; i < total_iterations; i++){
-      double x = r.NextDouble();
-      double y = r.NextDouble();
-      if (Sqrt(Pow(x,2) + Pow(y,2)) < 1)
-        count_inside_quarter_circle++;
+var r = new Random();
+for (int i = 0; i < total_iterations; i++){
+  double x = r.NextDouble();
+  double y = r.NextDouble();
+  if (Sqrt(Pow(x,2) + Pow(y,2)) < 1)
+    count_inside_quarter_circle++;
 }
 {% endhighlight %}
 
-And finally print out the answer. Note we are casting to a double. Other wise the arithmetic will return an int and either will produce a 3 or 4.
+And finally print out the answer. Note we are casting to a double. Otherwise the arithmetic will return an integer value.
+
 {% highlight c# %}
-Console.WriteLine((double)4*count_inside_quarter_circle/total_iterations);
+Console.WriteLine((double)4 * count_inside_quarter_circle / total_iterations);
 {% endhighlight %}
 
 You can test this online at https://repl.it/ or http://rextester.com/.
@@ -176,36 +183,36 @@ The full file should look like this. C, C++, C#, will all have very similar impl
 {% gist d74802badf35c47cb6651cddc05dade6 calculatingpi.cs %}
 
 ## Calculating with Ocaml
-Ocaml is a functional programming language so it is quite different than the last two examples. There are no type declarations like in C# but type is inferred based on context. Arithimetic operators must be specifically designed for the type being used.
+Ocaml is a functional programming language so it is quite different than the last two examples. There are no type declarations like in C# but type is inferred based on context. Arithimetic operators must be specifically chosen for the type being used.
 
 Basic function:
 {% highlight ocaml %}
 let f x = float_of_int x in
 {% endhighlight %}
 
-The name of this function is f and takes in one parameter x. The return of this function is the return of the the function float_of_int x. Basically you can this of this as an alias. We don't want to write float float_of_int x everywhere. Instead we would rather write f x. The in keyword is defining function f in the all of the code leading up to a ;;.
+The name of this function is f and takes in one parameter x. The return of this function is the return of the the function float_of_int x. Basically you can think of this function as an alias. We don't want to write float_of_int x everywhere. Instead we would rather write f x. The in keyword is defining function f in the all of the code leading up to a ;;.
 
 {% highlight ocaml %}
 let hyp a b = sqrt((a *. a ) +. (b *. b)) in
 {% endhighlight %}
-This function called hypotenuse takes in two parameters a and b. You will notice that the expression on the right hand side has *. and +. operators. These are operaters used on floating point numbers. By using these the ocaml compiler knows that a and b must be floats and will issue an error if we try to pass in an integer.
+This function called hyp takes in two parameters a and b. You will notice that the expression on the right hand side has *. and +. operators. These are operaters used on floating point numbers. By using these the ocaml compiler knows that a and b must be floats and will issue an error if we try to pass in an integer.
 
 {% highlight ocaml %}
 let randcheck () = hyp (Random.float 1.0) (Random.float 1.0) < 1.0 in
 {% endhighlight %}
-The randcheck function takes in an empty parameter. This makes sure that each time the function is called that it gets reevaluated. This functions passes 2 random floats to the hypotenuse function and return a logical true and false depending on if the hypotenuse is less than or greater than 1. Note that the Random.float function takes a float value as an argument. This arguement limits the maximum return value and note that it is 1.0 (a float) and not 1 (an int).
+The randcheck function takes in an empty parameter. This makes sure that each time the function is called it will be reevaluated. This functions passes 2 random floats to the hypotenuse function and returns a logical true and false depending on if the hypotenuse is less than or greater than 1. Note that the Random.float function takes a float value as an argument. This argument limits the maximum return value and also note that it is 1.0 (a float) and not 1 (an int).
 
 {% highlight ocaml %}
 let total_iterations = 1000000 in
 {% endhighlight %}
-This functions is only evaluated once since no arguments are passed into it.
+This function is only evaluated once since no arguments are passed into it.
 
 {% highlight ocaml %}
 let count_inside_quarter_circle = ref 0 in
 {% endhighlight %}
-This funcstion defines a reference to a variable. This way we can change the value of the variable. By default it is set to 0.
+This function defines a reference to a variable. This way we can change the value of the variable. By default it is set to 0.
 
-Finally lets deal with the for loops.
+Finally lets deal with the for loop.
 {% highlight ocaml %}
 for i = 1 to total_iterations do
   let a = if  (randcheck ()) then 1 else 0 in
@@ -223,6 +230,6 @@ You can try this online at https://www.tutorialspoint.com/compile_ocaml_online.p
 
 The full file should look like this. 
 
-{% gist d74802badf35c47cb6651cddc05dade6 calculatingpi.ml %}
+{% gist 4ce0fc35c5907f0c422cb670ad78f2e0 %}
 
 ## That's All Folks
