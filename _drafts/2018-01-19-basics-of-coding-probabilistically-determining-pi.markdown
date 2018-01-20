@@ -2,127 +2,227 @@
 layout: post
 title: "Basics of Coding: Probabilistically Determining pi"  
 date: 2018-01-19 00:00:00 -0700
-description: Exploring aerial footprints, quaternions, and angles
+description: Learning how to determine pi base on probability whilst also learning a little bit about programming languages
 img: pprz_cam_screenshot.png # Add image post (optional)
-tags: [UAV, Camera, footprint, aerial, field of view, quaternions, angles] # add tag
+tags: [pi, coding, probability, c#, ocaml, python] # add tag
 ---
-## Questions
+## PI
+
+pi is an irrational constant that is the ratio of a circle's circumference to its diameter
+
+$$ Circumference =  \pi \times d \tag{1}$$
+
+It is also used to calculate a circle's area.
+
+$$ Area_circ =  \pi \times r^2 \tag{2}$$
+
+If we overlay a circle on a square as shown below we can compare the difference in the area of the two.
+![Area Comparison]({{site.baseurl}}/assets/img/circle_compare.png)
+
+So if we were to randomly choose any location on the square what would be the probability that it would be inside the circle. The probability is just the ratio of areas.
+
+$$ Area_sqr =  d^2 = (2r)^2 = 4 \times r^2 \tag{3}$$
+
+$$ Probabilty =  \frac{Area_circ}{Area_sqr} = \frac{ \pi \times r^2}{4 \times r^2} \tag{4}$$
+
+$$ Probabilty =   \frac{\pi}{4} \tag{5}$$
+
+So the chance that we hit the inside of the circle is $$\frac{\pi}{4}$$.
+
+## Making it computationally easier.
+
+Let's just look at $$\frac{1}{4}$$ of the drawing. This will make a bit more sense later on.
+![Area Comparison]({{site.baseurl}}/assets/img/quarter_circle_compare.png)
+
+In this diagram the radius of the circle is 1. The probability of being in the $$\frac{1}{4}$$ circle when choosing a random position inside the smaller square is still the same probabiliy as in 5. This diagram also shows an x and y axis with an origin at the centre of the original circle.
+
+Ok. So if we can generate two random numbers between 0 and 1, we can use the first random number to represent an x coordinate nd the second number to represent a y coordinate. We just need some equation to govern whether the randomly chosen x and y coordinate are insie the $$\frac{1}{4}$$ circle.
+
+We can use pythagorean theorem to help us. We know that the radius of the circle is always 1. So...
+
+$$ \sqrt{x^2 + y^2} < 1 \tag{4}$$
+
+
+## Calculating with Python
+Ok, let's start with how to do this with python.
+
+We will be using a few premade python libraries. So the first step is to import these libraries in.
+
+{% highlight python %}
+import math
+import random
+{% endhighlight %}
+
+this allows us to use math functions like square root and power as well as a function to generate random numbers. We can perform those operations like this.
+
+{% highlight python %}
+sqrt_2 = math.sqrt(2)    # return square root of 2 inside the variable sqrt_2
+nine = math.pow(3,2)   # returns 9 inside the variable nine
+random_num = random.random() # returns a random number between 0 and 1 inside the variable random_num
+{% endhighlight %}
+
+This is a little tedius to keep writing math. and random. so instead we can import all the functions and use them directly.
+
+{% highlight python %}
+from math import *
+from random import *
+{% endhighlight %}
+
+After importing the libraries we need to genrate to variable to hold the total number of iterations we will perform and the number of times those iterations succeed in being inside the $$\frac{1}{4}$$ circle.
+
+{% highlight python %}
+total_iterations = 1000000
+count_inside_quarter_circle = 0
+{% endhighlight %}
+
+Next we can start looping through all of the iterations. The easiest way to make a for loop in python is using the range keyword. This block of code will run multiple times while changing the value of i from 0 to total_iterations
+
+{% highlight python %}
+for i in range(total_iterations):
+  ...
+{% endhighlight %}
+
+With Python we have to be careful about our indentations and note that there is a colon after a function, loop, or if statement.
+
+{% highlight python %}
+for i in range(total_iterations):
+  x = random()
+  y = random()
+  if sqrt(pow(x,2) + pow(y,2)) < 1:
+    count_inside_quarter_circle = count_inside_quarter_circle + 1
+{% endhighlight %}
+
+Finally we can then print out our answer for pi.
+
+{% highlight python %}
+print(4*count_inside_quarter_circle/total_iterations)
+{% endhighlight %}
+
+You can test this online at https://repl.it/ or https://www.python.org/shell/.
+
+The full file should look like this.
+
+{% gist d74802badf35c47cb6651cddc05dade6 calculatingpi.py %}
+
+## Calculating with C#
+
+Ok so this starts off very similar to python. Start off with our imports. In c# we use the using keyword.
+
+{% highlight c# %}
+using System;
+using System.Math;
+
+Next we contrcut the main body of our program. We need to make a class and a main function. This is how the compiler knows where the program starts. You need to do something similar in python when you have larger projects, but python interprets everything at runtime line by line.
+
+{% endhighlight %}
+class MainClass {
+  public static void Main (string[] args) {
+    //Program Code
+  }
+}
+
+In c# we need to define variables and the type of data associated with them. We will be using integer variables and doubles. Doubles are numbers that can hold a large amount of decimal values.
+
+{% highlight c# %}
+int total_iterations = 100000000;
+int count_inside_quarter_circle = 0;
+{% endhighlight %}
+
+We can generate random numbers using the Random class.  
+
+{% highlight c# %}
+Random r = new Random(); //initialize a new object of the class random
+double x = r.NextDouble(); //return random number between 0 and 1 stored in variable x
+double y = r.NextDouble(); //return random number between 0 and 1 stored in variable y
+{% endhighlight %}
+
+With for loops we may pass three different operations. The first may be a variable initializer, the second is a condition that will stop the loop, and finally we have an operation that will be done at the end of each loop. Any or all of these may be blank.
+
+{% highlight c# %}
+int k = 0;
+for (int i = 0; i < total_iterations; i++){
+
+  if (LOGIC_STATEMENT)
+    k++; //only do the very next line because there are no brackets
+    
+  if (OTHER_LOGIC STATEMENT){
+    //Do this line
+    //and this line
+    k++; //increase the value of k by 1
+  }
+}
+{% endhighlight %}
+
+Our full loop will llok like this.
+{% highlight c# %}
+    var r = new Random();
+    for (int i = 0; i < total_iterations; i++){
+      double x = r.NextDouble();
+      double y = r.NextDouble();
+      if (Sqrt(Pow(x,2) + Pow(y,2)) < 1)
+        count_inside_quarter_circle++;
+}
+{% endhighlight %}
+
+And finally print out the answer. Note we are casting to a double. Other wise the arithmetic will return an int and either will produce a 3 or 4.
+{% highlight c# %}
+Console.WriteLine((double)4*count_inside_quarter_circle/total_iterations);
+{% endhighlight %}
+
+You can test this online at https://repl.it/ or http://rextester.com/.
+
+The full file should look like this. C, C++, C#, will all have very similar implementations as what is shown in the following file.
+
 {% gist d74802badf35c47cb6651cddc05dade6 calculatingpi.cs %}
-* If I have a camera pointing straight down from a UAV what area on the ground will be captured in the image?
-* How does this change if the UAV experiences roll/pitch/yaw?
-* What happens if this camera is on a gimbal?
 
-Do you have these questions? Well let's see the answers.
+## Calculating with Ocaml
+Ocaml is a functional programming language so it is quite different than the last two examples. There are no type declarations like in C# but type is inferred based on context. Arithimetic operators must be specifically designed for the type being used.
 
-## Preliminary Information
-Before we get started it is important to cover a few basics. This tutorial will use the angle units of degrees, distance units of meters, and GPS coordinates in UTM.
-
-It is important that when converting from UTM->WGS84 or WGS84->UTM that all of your units start in the same coordinate system. This tutorial will not cover how to convert between units, but it is important that all conversions follow the same math and are reversible. (Don't obtain coordinates from different sources or formats because they may have used a slightly different conversion method than what you will.)
-
-In this tutorial we will be using Tait-Bryan angles. This is an angle naming convention so you can personally use whatever you like. The only changes in the math will be a negative sign here and there. [Angle Conventions](https://en.wikipedia.org/wiki/Euler_angles)
-
-![Tait-Bryan Angle Convention. Courtesy Wikimedia](https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Taitbrianzyx.svg/245px-Taitbrianzyx.svg.png)
-
-
-## Basic Ground Footprint
-The footprint of a camera pointing straight down is determined by some very basic trigonometry. A camera's sensor and lens combination will produce a certain angle of view (AOV). You can look this up for your camera. AOV can be broken into a horizontal field of view (HFV), and a vertical field of view (VFV). [Check out this wikipedia page for more info](https://en.wikipedia.org/wiki/Field_of_view)
-
-So from our UAV we can make a triangle with the ground, using AOV and altitude.
-![The camera angle of view makes a triangle]({{site.baseurl}}/assets/img/simple_triangle.png)
-
-If we cut this triangle, by drawing a straight line from the UAV to the ground, we can get 2 smaller triangles. Each of these smaller triangles are right triangles so we can use trigonometric identities to solve for distance on the ground.
-
-$$ ground\_in\_image =  (\tan{\frac{AOV}{2}} \times altitude) \times 2 \tag{1}$$ 
-
-$$ horizontal\_ground =  (\tan{\frac{HFV}{2}} \times altitude) \times 2 \tag{2}$$
-
-$$ vertical\_ground =  (\tan{\frac{VFV}{2}} \times altitude) \times 2 \tag{3}$$
-
-Now this is great and all, but it does not take into account the utm location of the UAV nor does it take into account the yaw of the UAV. So let's do that.
-
-Let's start by defining two new variables, that represent the distance of the ground from a point directly below the UAV. (in our case this will end up being exactly half of the ground.)
-
-$$ dx =  (\tan{\frac{HFV}{2}} \times altitude) \tag{4}$$
-
-$$ dy =  (\tan{\frac{VFV}{2}} \times altitude) \tag{5}$$
-
-This dx and dy disregard any yaw, so we will need to convert them into x and y in the UTM system by incorporating yaw. (Also called psi in Tait_bryan)
-
-$$dutmx =  dx \times \cos{\psi} - dy \times \sin{\psi} \tag{6}$$
-
-$$dutmy = -dx \times \sin{\psi} - dy \times \cos{\psi} \tag{7}$$
-
-Great now we just need to add that to the current UTM coordinates of the UAV.
-
-$$utmx_1 = utmx + dutmx \tag{8}$$
-
-$$utmy_1 = utmy + dutmy \tag{9}$$
-
-So this will provide the first corner of your ground footprint. To get additional corners change the values in equations 4,5. Use the remaining combinations of:
-
-$$(\frac{HFV}{2},-\frac{VFV}{2}),(-\frac{HFV}{2},\frac{VFV}{2}),(-\frac{HFV}{2},-\frac{VFV}{2})$$
-
-## So my UAV is pitching and rolling about, Now what do I do?
-Ok, I get you. This is actually really easy since we have no yet included a gimbal. All you need to do is modify equations 4,5 like this:
-
-$$ dx =  (\tan{(\frac{HFV}{2} + \phi)} \times altitude) \tag{10}$$
-
-$$ dy =  (\tan{(\frac{VFV}{2}+ \theta)} \times altitude) \tag{11}$$
-
-## Let's include a gimbal
-This is where things get complicated. Essentially we have two rotations and there is no simple fix like in 10 and 11. When I first attempted this problem I tried to expand equations 10, and 11 but that proved to be a headache. I attempted to take the two rotations, combine them together and then apply them. The problem is that when you combine the two rotations you are throwing away information on which direction of the image is up. What I learned was that I needed to look at each corner independently and then apply the rotations.
-
-Ok so let's do it. First we need to represent each corner as a quaternion. (We will be using quaternions to perform the rotations). Also I'll be doing the following section in C#, but it should still be easy to follow along. The source code for the math is linked at the end of this section.
-
-{% highlight c# %}
-Quaternion TR = new Quaternion(-hfv.Value / 2,  vfv.Value / 2, 0, true);
-Quaternion TL = new Quaternion( hfv.Value / 2,  vfv.Value / 2, 0, true);
-Quaternion BR = new Quaternion(-hfv.Value / 2, -vfv.Value / 2, 0, true);
-Quaternion BL = new Quaternion( hfv.Value / 2, -vfv.Value / 2, 0, true);
-{% endhighlight %}
-Please note that the constructor for the quaternion is converting from euler angles into quaternion representation. [There's an entire wikipedia article on the topic](https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles)
-
-Next we will create quaternions for the UAV rotation and the gimbal rotation.
-{% highlight c# %}
-Quaternion gimRot = new Quaternion(gimRoll.Value, gimPitch.Value, gimYaw.Value, true);
-Quaternion acRot = new Quaternion(acRoll.Value, acPitch.Value, acYaw.Value, true);
+Basic function:
+{% highlight ocaml %}
+let f x = float_of_int x in
 {% endhighlight %}
 
-Next we will multiply to get new quaternion representations of each corner.
-{% highlight c# %}
-Quaternion TR1 = acRot.Multiply(gimRot.Multiply(TR));
-Quaternion TL1 = acRot.Multiply(gimRot.Multiply(TL));
-Quaternion BR1 = acRot.Multiply(gimRot.Multiply(BR));
-Quaternion BL1 = acRot.Multiply(gimRot.Multiply(BL));
+The name of this function is f and takes in one parameter x. The return of this function is the return of the the function float_of_int x. Basically you can this of this as an alias. We don't want to write float float_of_int x everywhere. Instead we would rather write f x. The in keyword is defining function f in the all of the code leading up to a ;;.
+
+{% highlight ocaml %}
+let hyp a b = sqrt((a *. a ) +. (b *. b)) in
+{% endhighlight %}
+This function called hypotenuse takes in two parameters a and b. You will notice that the expression on the right hand side has *. and +. operators. These are operaters used on floating point numbers. By using these the ocaml compiler knows that a and b must be floats and will issue an error if we try to pass in an integer.
+
+{% highlight ocaml %}
+let randcheck () = hyp (Random.float 1.0) (Random.float 1.0) < 1.0 in
+{% endhighlight %}
+The randcheck function takes in an empty parameter. This makes sure that each time the function is called that it gets reevaluated. This functions passes 2 random floats to the hypotenuse function and return a logical true and false depending on if the hypotenuse is less than or greater than 1. Note that the Random.float function takes a float value as an argument. This arguement limits the maximum return value and note that it is 1.0 (a float) and not 1 (an int).
+
+{% highlight ocaml %}
+let total_iterations = 1000000 in
+{% endhighlight %}
+This functions is only evaluated once since no arguments are passed into it.
+
+{% highlight ocaml %}
+let count_inside_quarter_circle = ref 0 in
+{% endhighlight %}
+This funcstion defines a reference to a variable. This way we can change the value of the variable. By default it is set to 0.
+
+Finally lets deal with the for loops.
+{% highlight ocaml %}
+for i = 1 to total_iterations do
+  let a = if  (randcheck ()) then 1 else 0 in
+  count_inside_quarter_circle := !count_inside_quarter_circle + a;
+done;
+{% endhighlight %}
+the ! and := operators are how we derefence the value inside count_inside_quarter_circle and how we then put a new value in.
+
+Finally let's print.
+{% highlight ocaml %}
+print_string (string_of_float ( 4.0 *. ( (f !count_inside_quarter_circle) /. (f total_iterations) )));;
 {% endhighlight %}
 
-And that is pretty much it. We can now convert back into euler angles ([Remember this link](https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles)) Once we get back angles, we can roll and pitch into modified equations 4,5. Equations 6,7 will use the yaw angle from the quaternion.
+You can try this online at https://www.tutorialspoint.com/compile_ocaml_online.php
 
-$$ dx =  (\tan{roll} \times altitude) \tag{12}$$
+The full file should look like this. 
 
-$$ dy =  (\tan{pitch} \times altitude) \tag{13}$$
+{% gist d74802badf35c47cb6651cddc05dade6 calculatingpi.ml %}
 
-$$dutmx =  dx \times \cos{yaw} - dy \times \sin{yaw} \tag{14}$$
-
-$$dutmy = -dx \times \sin{yaw} - dy \times \cos{yaw} \tag{15}$$
-
-Then follow up with 8 and 9.
-
-[C# Quaternion class used to perform multiplications and conversions](https://github.com/rijesha/CamFootprintTester/blob/master/CamFootprintTester/Quaternion.cs)
-
-## C# Cam Footprint Tester
-
-I wrote a small c# application to test this out.
-
-![Screenshot of tester application]({{site.baseurl}}/assets/img/cam_footprint_tester.PNG)
-
-[You can find the full code here](https://github.com/rijesha/CamFootprintTester/) 
-
-[The main program file that includes all the steps](https://github.com/rijesha/CamFootprintTester/blob/master/CamFootprintTester/MainWindow.xaml.cs)
-
-## Real Life Useage.
-I wrote this code for the Paparazzi UAV project. It is written in OCaml.
-[Here is the pull request with all of the relevant files changed.](https://github.com/paparazzi/paparazzi/pull/2103)
-
-
-Thanks for reading. I hope this helps somebody out!!
+## That's All Folks
