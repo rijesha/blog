@@ -802,14 +802,12 @@ blockquote {
 pre {
   padding: 1rem 2rem;
   overflow-x: auto;
-  white-space: pre-wrap
 }
 
 pre code {
   border: 0;
   padding-right: 0;
   padding-left: 0;
-  white-space: pre-wrap
 }
 
 .wrapper {
@@ -1367,4 +1365,20 @@ footer .copyright {
   .post .post-content .post-title a {
     font-size: 21px;
   }
+}
+
+/* GitHub Bug: Enable wrapping of long code lines */
+.blob-code-inner, .markdown-body > pre > code,
+.markdown-body > .highlight > pre {
+  white-space: pre-wrap !important;
+  word-break: break-all !important;
+  display: block !important;
+}
+
+pre {
+  white-space: pre-wrap
+}
+
+pre code {
+  white-space: pre-wrap
 }
